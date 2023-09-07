@@ -7,12 +7,18 @@ from .models import Product
 from .models import ProductCategory
 from .models import Restaurant
 from .models import RestaurantMenuItem
+from .models import Order
+from .models import OrderedProduct
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
     model = RestaurantMenuItem
     extra = 0
 
+
+class OrderedProductInline(admin.TabularInline):
+    model = OrderedProduct
+    extra = 0
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
@@ -104,3 +110,21 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(ProductCategory)
 class ProductAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    search_fields = ['address',]
+    search_help_text = 'Поиск по адресу'
+
+    inlines = [
+        OrderedProductInline,
+    ]
+    fields = ['firstname', 'lastname', 'address', 'phonenumber']
+    list_display = ['address', 'phonenumber', 'get_fullname',]
+    ordering = ['id',]
+
+    @admin.display(description='Order')
+    def get_fullname(self, obj):
+        return f'{obj.firstname} {obj.lastname}'
+
