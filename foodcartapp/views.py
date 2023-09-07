@@ -1,4 +1,5 @@
-import json
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from django.http import JsonResponse
 from django.templatetags.static import static
@@ -7,9 +8,30 @@ from django.templatetags.static import static
 from .models import Product, Order, OrderedProduct
 
 
+@api_view(['GET'])
 def banners_list_api(request):
     # FIXME move data to db?
-    return JsonResponse([
+    # return JsonResponse([
+    #     {
+    #         'title': 'Burger',
+    #         'src': static('burger.jpg'),
+    #         'text': 'Tasty Burger at your door step',
+    #     },
+    #     {
+    #         'title': 'Spices',
+    #         'src': static('food.jpg'),
+    #         'text': 'All Cuisines',
+    #     },
+    #     {
+    #         'title': 'New York',
+    #         'src': static('tasty.jpg'),
+    #         'text': 'Food is incomplete without a tasty dessert',
+    #     }
+    # ], safe=False, json_dumps_params={
+    #     'ensure_ascii': False,
+    #     'indent': 4,
+    # })
+    return Response([
         {
             'title': 'Burger',
             'src': static('burger.jpg'),
@@ -25,12 +47,10 @@ def banners_list_api(request):
             'src': static('tasty.jpg'),
             'text': 'Food is incomplete without a tasty dessert',
         }
-    ], safe=False, json_dumps_params={
-        'ensure_ascii': False,
-        'indent': 4,
-    })
+    ])
 
 
+@api_view(['GET'])
 def product_list_api(request):
     products = Product.objects.select_related('category').available()
 
@@ -53,14 +73,17 @@ def product_list_api(request):
             }
         }
         dumped_products.append(dumped_product)
-    return JsonResponse(dumped_products, safe=False, json_dumps_params={
-        'ensure_ascii': False,
-        'indent': 4,
-    })
+    # return JsonResponse(dumped_products, safe=False, json_dumps_params={
+    #     'ensure_ascii': False,
+    #     'indent': 4,
+    # })
+    return Response(dumped_products)
 
 
+@api_view(['POST'])
 def register_order(request):
-    data = json.loads(request.body.decode('utf-8'))
+    data = request.data
+    print(data)
     phone = data['phonenumber']  # TODO add validator ?
     order = Order.objects.create(
         firstname=data['firstname'],
@@ -75,4 +98,4 @@ def register_order(request):
             quantity=ordered_product['quantity'],
         )
 
-    return JsonResponse({})
+    return Response(data)
