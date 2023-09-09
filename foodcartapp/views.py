@@ -1,12 +1,13 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.serializers import Serializer
+from rest_framework.serializers import CharField, IntegerField, ListField
+from rest_framework.serializers import ValidationError
 
 from phonenumber_field.validators import validate_international_phonenumber
 
 from django.http import JsonResponse
 from django.templatetags.static import static
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 
 from .models import Product, Order, OrderedProduct
@@ -87,11 +88,11 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     data = request.data
-    error_422_response = get_error_422_response(data)
-    if error_422_response:
-        return Response(error_422_response, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    serializor = OrderSerializer(data=data)
+    serializor.is_valid(raise_exception=True)
+    data = serializor.validated_data
 
-    phone = data['phonenumber']  # TODO add validator ?
+    phone = data['phonenumber']
     order = Order.objects.create(
         firstname=data['firstname'],
         lastname=data['lastname'],
@@ -108,104 +109,38 @@ def register_order(request):
     return Response(data)
 
 
-def get_error_422_response(data):
-    products = Product.objects.all()
-    key_error_response = {
-        "reason": "Be sure what you indicate all necessary keys",
-        "warnings": [
-            "null and none values not available.",
-            "the phonenumber must start with +7",
-        ],
-        "necessary_keys": {
-            "phonenumber": "str",
-            "firstname": "str",
-            "lastname": "str",
-            "address": "str",
-            "products": [{"product": "int > 0", "quantity": "int > 0",},],
-        }
-    }
-    does_not_exist_response ={
-        "reason": "product does not exist",
-        "wrong_products": []
-    }
-    try:
-        if not all(data.values()):
-            raise KeyError
-        default_error_data = get_default_dict(
-            ["phonenumber", "firstname", "lastname",
-             "address", "products_list", "product_dict", "product_dict_values"], "correct")
-        error_data = {}
-        error_data.update(default_error_data)
-        if not isinstance(data['phonenumber'], str):
-            error_data.update({"phonenumber": "not correct"})
-        if not isinstance(data['firstname'], str):
-            error_data["firstname"] = "not correct: available type str"
-        if not isinstance(data["lastname"], str):
-            error_data["lastname"] = "not correct: available type str"
-        if not isinstance(data["address"], str):
-            error_data["address"] = "not correct: available type str"
-        if not isinstance(data["products"], list):
-            error_data["products_list"] = "not correct: available type list"
-            error_data.update({
-                "products_list": "not correct: available type list",
-                "product_dict": None,
-                "product_dict_values": None
-            })
-        elif not data['products']:
-            error_data.update({
-                "products_list": "not correct: null and none not available",
-                "product_dict": None,
-                "product_dict_values": None
-            })
-        else:
-            for product in data["products"]:
-                if not isinstance(product, dict):
-                    error_data.update({
-                        "product_dict": "not correct: be sure all values of list is dict",
-                        "product_dict_values": None,
-                    })
-                elif not product:
-                    error_data.update({
-                        "product_dict": "not correct: null and none not available",
-                        "product_dict_values": None
-                    })
-                else:
-                    error_text = ''
-                    if not product["quantity"] or not product["product"]:
-                        raise KeyError
-                    if not isinstance(product["quantity"], int):
-                        error_text += "value quantity not correct: available type int, available values > 0 . "
-                    if not isinstance(product["product"], int):
-                        error_text += "product value not correct: available type int, available values > 0 . "
-                    if error_text:
-                        error_data.update({"product_dict_values": error_text})
-                    if not products.filter(id=product["product"]):
-                        does_not_exist_response["wrong_products"].append(product["product"])
-        if does_not_exist_response["wrong_products"]:
-            raise ObjectDoesNotExist
+class ProductSerializer(Serializer):
+    product = IntegerField()
+    quantity = IntegerField()
 
-        validate_international_phonenumber(data['phonenumber'])
-    except KeyError:
-        return key_error_response
-    except ObjectDoesNotExist:
-        # error_data.update(does_not_exist_response)
-        # return error_data
-        return does_not_exist_response
-    except ValidationError:
-        error_data.update({
-            "phonenumber": "not correct: wrong number. Be sure your phonenumber is correct, valid and begin with +7"
-        })
-        return error_data
+    def validate_quantity(self, value):
+        if value <= 0:
+            raise ValidationError('Not a valid value: quantity <= 0')
+        return value
 
-    if error_data == default_error_data:
-        return
-    else:
-        return error_data
+    def validate_product(self, value):
+        products = Product.objects.all()
+        if value <= 0:
+            raise ValidationError('Not a valid value: product <= 0')
+        if not products.filter(id=value):
+            raise ValidationError(f'Product {value} does not exist')
+        return value
 
 
-def get_default_dict(keys, default_value):
-    default_dict = {}
-    for key in keys:
-        default_dict.update({key: default_value})
+class OrderSerializer(Serializer):
+    phonenumber = CharField()
+    firstname = CharField()
+    lastname = CharField()
+    address = CharField()
+    products = ListField(child=ProductSerializer())
+    def validate_phonenumber(self, value):
+        if value[0] == '8':
+            value = value.replace("8", "+7", 1)
+        validate_international_phonenumber(value)
+        return value
 
-    return default_dict
+    def validate_products(self, value):
+        if not value:
+            raise ValidationError('This field can\'t be empty')
+        return value
+
