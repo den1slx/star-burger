@@ -132,15 +132,10 @@ class OrderSerializer(Serializer):
     firstname = CharField()
     lastname = CharField()
     address = CharField()
-    products = ListField(child=ProductSerializer())
+    products = ListField(child=ProductSerializer(), allow_empty=False)
+
     def validate_phonenumber(self, value):
         if value[0] == '8':
             value = value.replace("8", "+7", 1)
         validate_international_phonenumber(value)
         return value
-
-    def validate_products(self, value):
-        if not value:
-            raise ValidationError('This field can\'t be empty')
-        return value
-
