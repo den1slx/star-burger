@@ -7,9 +7,8 @@ from rest_framework.serializers import ValidationError
 from phonenumber_field.validators import validate_international_phonenumber
 
 from django.http import JsonResponse
+from django.db import transaction
 from django.templatetags.static import static
-from django.core.validators import MinValueValidator, DecimalValidator
-
 
 from .models import Product, Order, OrderedProduct
 
@@ -87,6 +86,7 @@ def product_list_api(request):
 
 
 @api_view(['POST'])
+@transaction.atomic
 def register_order(request):
     data = request.data
     serializor = OrderSerializer(data=data)
