@@ -1,14 +1,14 @@
 from phonenumber_field.modelfields import PhoneNumberField
 
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, DecimalValidator
 
 
 class OrderQuerySet(models.QuerySet):
     def get_total_price(self):
         price = models.ExpressionWrapper(
             models.Sum(
-                models.F('ordered_products__quantity') * models.F('ordered_products__product__price')
+                models.F('ordered_products__price')
             ), output_field=models.DecimalField()
         )
         orders = self.prefetch_related('ordered_products')
@@ -47,6 +47,16 @@ class OrderedProduct(models.Model):
         related_name='ordered_products',
     )
     quantity = models.PositiveIntegerField(verbose_name='Количество')
+    price = models.DecimalField(
+        decimal_places=2,
+        max_digits=12,
+        null=True,
+        validators=[
+            MinValueValidator(1), DecimalValidator(
+                max_digits=12, decimal_places=2
+            )
+        ],
+    )
 
     class Meta:
         verbose_name = 'Заказанный продукт'

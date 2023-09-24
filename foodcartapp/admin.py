@@ -128,3 +128,7 @@ class OrderAdmin(admin.ModelAdmin):
     def get_fullname(self, obj):
         return f'{obj.firstname} {obj.lastname}'
 
+
+@admin.register(OrderedProduct)
+class OrderedProductAdmin(admin.ModelAdmin):
+    pass

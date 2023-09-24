@@ -8,6 +8,7 @@ from phonenumber_field.validators import validate_international_phonenumber
 
 from django.http import JsonResponse
 from django.templatetags.static import static
+from django.core.validators import MinValueValidator, DecimalValidator
 
 
 from .models import Product, Order, OrderedProduct
@@ -101,10 +102,12 @@ def register_order(request):
     )
 
     for ordered_product in data['products']:
+        product = Product.objects.get(id=ordered_product['product'])
         OrderedProduct.objects.create(
             order=order,
-            product=Product.objects.get(id=ordered_product['product']),
+            product=product,
             quantity=ordered_product['quantity'],
+            price=ordered_product['quantity'] * product.price
         )
     return Response(data)
 
