@@ -4,11 +4,26 @@ from django.db import models
 from django.core.validators import MinValueValidator
 
 
+class OrderQuerySet(models.QuerySet):
+    def get_total_price(self):
+        price = models.ExpressionWrapper(
+            models.Sum(
+                models.F('ordered_products__quantity') * models.F('ordered_products__product__price')
+            ), output_field=models.DecimalField()
+        )
+        orders = self.prefetch_related('ordered_products')
+        orders = orders.annotate(price=price)
+
+        return orders
+
+
 class Order(models.Model):
     firstname = models.CharField('Имя', max_length=50)
     lastname = models.CharField('Фамилия', max_length=50)
     phonenumber = PhoneNumberField('Номер телефона')
     address = models.TextField('Адрес', db_index=True)
+
+    objects = OrderQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Заказ'
