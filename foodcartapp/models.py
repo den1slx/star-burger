@@ -29,6 +29,12 @@ class Order(models.Model):
         (DELIVERY, 'Заказ у курьера'),
         (COMPLETE, 'Заказ выполнен')
     ]
+    PAYMENT_CHOICES = [
+        ('CALL', 'Не указан'),
+        ('CARD', 'Карта'),
+        ('CASH', 'Наличные'),
+        ('PREPAY', 'Предоплата'),
+    ]
 
     firstname = models.CharField('Имя', max_length=50)
     lastname = models.CharField('Фамилия', max_length=50)
@@ -44,6 +50,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(default=now(), db_index=True)
     call_at = models.DateTimeField(null=True, blank=True, db_index=True)
     delivery_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    type_payment = models.CharField(max_length=6, choices=PAYMENT_CHOICES, db_index=True, default='CALL')
 
     objects = OrderQuerySet.as_manager()
 
