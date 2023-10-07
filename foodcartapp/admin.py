@@ -121,7 +121,7 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [
         OrderedProductInline,
     ]
-    fields = ['firstname', 'lastname', 'address', 'phonenumber', 'status', 'comment']
+    fields = ['firstname', 'lastname', 'address', 'phonenumber', 'status', 'comment', 'created_at', 'call_at', 'delivery_at']
     list_display = ['status', 'address', 'phonenumber', 'get_fullname',]
     list_filter = ['status',]
     ordering = ['id',]

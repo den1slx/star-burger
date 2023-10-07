@@ -2,6 +2,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 from django.db import models
 from django.core.validators import MinValueValidator, DecimalValidator
+from django.utils.timezone import now
 
 
 class OrderQuerySet(models.QuerySet):
@@ -40,6 +41,10 @@ class Order(models.Model):
         db_index=True,
     )
     comment = models.TextField(default='', blank=True)
+    created_at = models.DateTimeField(default=now(), db_index=True)
+    call_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    delivery_at = models.DateTimeField(null=True, blank=True, db_index=True)
+
     objects = OrderQuerySet.as_manager()
 
     class Meta:
