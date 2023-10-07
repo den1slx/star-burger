@@ -18,11 +18,27 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Order(models.Model):
+    ACCEPT = 'AC'
+    ASSEMBLE = 'AS'
+    DELIVERY = 'DE'
+    COMPLETE = 'CO'
+    STATUS_CHOICES = [
+        (ACCEPT, 'Заказ принят'),
+        (ASSEMBLE, 'Заказ собирается'),
+        (DELIVERY, 'Заказ у курьера'),
+        (COMPLETE, 'Заказ выполнен')
+    ]
+
     firstname = models.CharField('Имя', max_length=50)
     lastname = models.CharField('Фамилия', max_length=50)
     phonenumber = PhoneNumberField('Номер телефона')
     address = models.TextField('Адрес', db_index=True)
-
+    status = models.CharField(
+        max_length=2,
+        choices=STATUS_CHOICES,
+        default=ACCEPT,
+        db_index=True,
+    )
     objects = OrderQuerySet.as_manager()
 
     class Meta:
