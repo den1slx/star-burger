@@ -39,6 +39,7 @@ class Order(models.Model):
         default=ACCEPT,
         db_index=True,
     )
+    comment = models.TextField(default='', blank=True)
     objects = OrderQuerySet.as_manager()
 
     class Meta:
