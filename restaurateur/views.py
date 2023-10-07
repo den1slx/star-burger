@@ -3,10 +3,9 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
-
+from django.db.models import Q
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-
 
 from foodcartapp.models import Product, Restaurant, Order
 
@@ -92,6 +91,6 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.all().get_total_price().order_by('-id')
+    orders = Order.objects.all().filter(~Q(status='CO')).get_total_price().order_by('-id')
     context = {"order_items": orders}
     return render(request, template_name='order_items.html', context=context)
