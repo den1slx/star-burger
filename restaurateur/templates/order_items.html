@@ -11,7 +11,7 @@
   <br/>
   <br/>
   <div class="container">
-   <table class="table table-responsive">
+   <table class="table table-responsive" style="table-layout: fixed; width: 100%;">
     <tr>
       <th>ID заказа</th>
       <th>Статус</th>
@@ -20,18 +20,45 @@
       <th>Телефон</th>
       <th>Адрес доставки</th>
       <th>Цена заказа</th>
+      <th>Комментарий</th>
+      <th>Рестораны</th>
       <th>Админка</th>
     </tr>
-
     {% for item in order_items %}
       <tr>
         <td>{{ item.id }}</td>
-        <th>{{ item.get_status_display }}</th>
-        <th>{{ item.get_type_payment_display}}</th>
+        <td>{{ item.get_status_display }}</td>
+        <td>{{ item.get_type_payment_display}}</td>
         <td>{{ item.firstname }} {{item.lastname}}</td>
         <td>{{ item.phonenumber }}</td>
         <td>{{ item.address }}</td>
         <td>{{ item.price }}</td>
+        <td style="word-wrap:break-word;">
+          <details>
+            {% if item.comment %}
+            <summary> <small>Посмотреть комментарий</small> </summary>
+             {{item.comment}}
+            {% else %}
+            <summary> - </summary>
+            {% endif %}
+          </details>
+        </td>
+        <td>
+          {% if item.restaurant %}
+            Заказ собран в "{{item.restaurant}}"
+          {% else %}
+            <details>
+              <summary>Доступные рестораны: <small>Показать список</small></summary>
+              {% if item.available_restaurants %}
+                {% for rest in item.available_restaurants %}
+                  * {{ rest.name }};
+                {% endfor %}
+              {% else %}
+                Нет доступных ресторанов
+              {% endif %}
+            </details>
+          {% endif%}
+        </td>
         <td><a href="{% url 'admin:foodcartapp_order_change' item.id %}?next={{ request.path|urlencode }}"> Редактировать </a></td>
       </tr>
     {% endfor %}
