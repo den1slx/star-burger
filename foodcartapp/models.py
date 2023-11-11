@@ -41,17 +41,26 @@ class Order(models.Model):
     phonenumber = PhoneNumberField('Номер телефона')
     address = models.TextField('Адрес', db_index=True)
     status = models.CharField(
+        verbose_name='Статус',
         max_length=2,
         choices=STATUS_CHOICES,
         default=ACCEPT,
         db_index=True,
     )
-    comment = models.TextField(default='', blank=True)
-    created_at = models.DateTimeField(default=now(), db_index=True)
-    call_at = models.DateTimeField(null=True, blank=True, db_index=True)
-    delivery_at = models.DateTimeField(null=True, blank=True, db_index=True)
-    type_payment = models.CharField(max_length=6, choices=PAYMENT_CHOICES, db_index=True, default='CALL')
-
+    comment = models.TextField(verbose_name='Комментарий', default='', blank=True)
+    created_at = models.DateTimeField(verbose_name='Заказ сделан', default=now(), db_index=True)
+    call_at = models.DateTimeField(verbose_name='Звонок сделан', null=True, blank=True, db_index=True)
+    delivery_at = models.DateTimeField(verbose_name='Доставка выполнена', null=True, blank=True, db_index=True)
+    type_payment = models.CharField(verbose_name='Тип оплаты', max_length=6, choices=PAYMENT_CHOICES, db_index=True, default='CALL')
+    restaurant = models.ForeignKey(
+        'Restaurant',
+        verbose_name='Ресторан',
+        blank=True,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name='orders',
+        help_text='Ресторан в котором был собран заказ'
+    )
     objects = OrderQuerySet.as_manager()
 
     class Meta:
