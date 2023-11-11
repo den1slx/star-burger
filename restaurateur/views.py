@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
-from foodcartapp.models import Product, Restaurant, Order
+from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
 
 
 class Login(forms.Form):
@@ -91,6 +91,16 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.all().filter(~Q(status='CO')).get_total_price().order_by('-id')
-    context = {"order_items": orders}
+    orders = Order.objects.all().filter(~Q(status='CO')).get_total_price().order_by('status')
+    rests = Restaurant.objects.all()
+    [get_available_rests(order, rests) for order in orders]
+    context = {"order_items": orders, 'rests': 'rests'}
     return render(request, template_name='order_items.html', context=context)
+
+
+def get_available_rests(order, rests):
+    ordered_products = order.ordered_products.all()
+    for product in ordered_products:
+        rests = rests.filter(menu_items__product_id=product.product_id)
+    order.available_restaurants = rests  # multiple 1 query for 1 order
+    return order
