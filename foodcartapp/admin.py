@@ -127,7 +127,9 @@ class OrderAdmin(admin.ModelAdmin):
         'status', 'comment',
         'created_at', 'call_at',
         'delivery_at', 'type_payment',
+        'restaurant',
     ]
+    autocomplete_fields = ['restaurant',]
     list_display = ['status', 'address', 'phonenumber', 'get_fullname',]
     list_filter = ['status',]
     ordering = ['id',]
@@ -135,12 +137,6 @@ class OrderAdmin(admin.ModelAdmin):
     @admin.display(description='Order')
     def get_fullname(self, obj):
         return f'{obj.firstname} {obj.lastname}'
-
-    # def response_change(self, request, obj):
-    #     response = super(OrderAdmin, self).response_change(request, obj)
-    #     if 'next' in request.GET and url_has_allowed_host_and_scheme(request.GET['next'], None):
-    #         return redirect(request.GET['next'])
-    #     return response
 
     def response_post_save_change(self, request, obj):
         response = super(OrderAdmin, self).response_post_save_change(request, obj)
