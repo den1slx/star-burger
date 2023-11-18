@@ -10,6 +10,8 @@ from .models import Restaurant
 from .models import RestaurantMenuItem
 from .models import Order
 from .models import OrderedProduct
+from .models import GeoData
+from .models import WrongGeoData
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -147,4 +149,15 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(OrderedProduct)
 class OrderedProductAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(GeoData)
+class GeoDataAdmin(admin.ModelAdmin):
+    pass
+
+
+
+@admin.register(WrongGeoData)
+class WrongGeoDataAdmin(admin.ModelAdmin):
     pass
