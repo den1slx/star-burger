@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django import forms
 from django.shortcuts import redirect, render
 from django.views import View
@@ -6,8 +8,10 @@ from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Q
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
+from django.utils import timezone
+from django.conf import settings
 
-from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
+from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem, GeoData
 
 
 class Login(forms.Form):
@@ -94,7 +98,7 @@ def view_orders(request):
     orders = Order.objects.all().filter(~Q(status='CO')).get_total_price().order_by('status')
     rests = Restaurant.objects.all()
     [get_available_rests(order, rests) for order in orders]
-    context = {"order_items": orders, 'rests': 'rests'}
+    context = {"order_items": orders, 'update': is_update_time()}
     return render(request, template_name='order_items.html', context=context)
 
 
@@ -102,5 +106,15 @@ def get_available_rests(order, rests):
     ordered_products = order.ordered_products.all()
     for product in ordered_products:
         rests = rests.filter(menu_items__product_id=product.product_id)
-    order.available_restaurants = rests  # multiple 1 query for 1 order
+    order.available_restaurants = rests 
     return order
+
+
+def is_update_time():
+    delta = timedelta(days=settings.TIMEDELTA)
+    now = timezone.now()
+    last_update_time = now.date() - delta
+
+    if GeoData.objects.filter(updated_at__lte=last_update_time):
+        return True
+    return False
