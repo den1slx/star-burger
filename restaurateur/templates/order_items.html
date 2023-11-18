@@ -1,5 +1,5 @@
 {% extends 'base_restaurateur_page.html' %}
-
+{% load additional_filters %}
 {% block title %}Необработанные заказы | Star Burger{% endblock %}
 {% load admin_urls %}
 {% block content %}
@@ -47,11 +47,17 @@
           {% if item.restaurant %}
             Заказ собран в "{{item.restaurant}}"
           {% else %}
+
             <details>
               <summary>Доступные рестораны: <small>Показать список</small></summary>
               {% if item.available_restaurants %}
                 {% for rest in item.available_restaurants %}
-                  * {{ rest.name }};
+                  {% if update %}
+                      {{ item.address|update_geodata:None }}
+                    * {{ rest.name }} - {{ rest.address|update_geodata:'address'|get_distance:item.address}};
+                  {% else %}
+                    * {{ rest.name }} - {{ rest.address|get_distance:item.address}};
+                  {% endif %}
                 {% endfor %}
               {% else %}
                 Нет доступных ресторанов
