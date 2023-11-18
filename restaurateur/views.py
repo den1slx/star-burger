@@ -106,7 +106,7 @@ def get_available_rests(order, rests):
     ordered_products = order.ordered_products.all()
     for product in ordered_products:
         rests = rests.filter(menu_items__product_id=product.product_id)
-    order.available_restaurants = rests 
+    order.available_restaurants = rests
     return order
 
 
