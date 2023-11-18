@@ -223,3 +223,29 @@ class RestaurantMenuItem(models.Model):
 
     def __str__(self):
         return f"{self.restaurant.name} - {self.product.name}"
+
+
+class GeoData(models.Model):
+    address = models.TextField(verbose_name='Адрес', unique=True)
+    lat = models.FloatField(verbose_name='Широта', null=True)
+    lng = models.FloatField(verbose_name='Долгота', null=True)
+    updated_at = models.DateTimeField(verbose_name='Дата обновления', null=True)
+    geolocate = models.TextField(verbose_name='Геолокация', null=True, blank=True)
+
+    def __str__(self):
+        return self.address
+
+    class Meta:
+        verbose_name = 'Геоданные'
+        verbose_name_plural = 'Геоданные'
+
+
+class WrongGeoData(models.Model):
+    address = models.TextField(verbose_name='Не корректный адрес', unique=True)
+
+    def __str__(self):
+        return self.address
+
+    class Meta:
+        verbose_name = 'Не распознанные адреса'
+        verbose_name_plural = 'Не распознанные адреса'
