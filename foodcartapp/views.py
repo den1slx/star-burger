@@ -1,16 +1,13 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.serializers import Serializer
-from rest_framework.serializers import CharField, IntegerField, ListField
-from rest_framework.serializers import ValidationError
 
-from phonenumber_field.validators import validate_international_phonenumber
 
 from django.http import JsonResponse
 from django.db import transaction
 from django.templatetags.static import static
 
 from .models import Product, Order, OrderedProduct
+from .serializers import OrderSerializer
 
 
 @api_view(['GET'])
@@ -89,56 +86,11 @@ def product_list_api(request):
 @transaction.atomic
 def register_order(request):
     data = request.data
-    serializor = OrderSerializer(data=data)
-    serializor.is_valid(raise_exception=True)
-    data = serializor.validated_data
+    serializer = OrderSerializer(data=data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.validated_data
+    order = serializer.save()
 
-    phone = data['phonenumber']
-    order = Order.objects.create(
-        firstname=data['firstname'],
-        lastname=data['lastname'],
-        phonenumber=phone,
-        address=data['address']
-    )
-
-    for ordered_product in data['products']:
-        product = Product.objects.get(id=ordered_product['product'])
-        OrderedProduct.objects.create(
-            order=order,
-            product=product,
-            quantity=ordered_product['quantity'],
-            price=ordered_product['quantity'] * product.price
-        )
     return Response(data)
 
 
-class ProductSerializer(Serializer):
-    product = IntegerField()
-    quantity = IntegerField()
-
-    def validate_quantity(self, value):
-        if value <= 0:
-            raise ValidationError('Not a valid value: quantity <= 0')
-        return value
-
-    def validate_product(self, value):
-        products = Product.objects.all()
-        if value <= 0:
-            raise ValidationError('Not a valid value: product <= 0')
-        if not products.filter(id=value):
-            raise ValidationError(f'Product {value} does not exist')
-        return value
-
-
-class OrderSerializer(Serializer):
-    phonenumber = CharField()
-    firstname = CharField()
-    lastname = CharField()
-    address = CharField()
-    products = ListField(child=ProductSerializer(), allow_empty=False)
-
-    def validate_phonenumber(self, value):
-        if value[0] == '8':
-            value = value.replace("8", "+7", 1)
-        validate_international_phonenumber(value)
-        return value
