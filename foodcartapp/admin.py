@@ -135,6 +135,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['status', 'address', 'phonenumber', 'get_fullname',]
     list_filter = ['status',]
     ordering = ['id',]
+    readonly_fields = ['created_at',]
 
     @admin.display(description='Order')
     def get_fullname(self, obj):
