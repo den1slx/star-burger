@@ -47,8 +47,8 @@ class Order(models.Model):
         default=ACCEPT,
         db_index=True,
     )
-    comment = models.TextField(verbose_name='Комментарий', default='', blank=True)
-    created_at = models.DateTimeField(verbose_name='Заказ сделан', default=now(), db_index=True)
+    comment = models.TextField(verbose_name='Комментарий', blank=True)
+    created_at = models.DateTimeField(verbose_name='Заказ сделан', auto_now=True, db_index=True)
     call_at = models.DateTimeField(verbose_name='Звонок сделан', null=True, blank=True, db_index=True)
     delivery_at = models.DateTimeField(verbose_name='Доставка выполнена', null=True, blank=True, db_index=True)
     type_payment = models.CharField(verbose_name='Тип оплаты', max_length=6, choices=PAYMENT_CHOICES, db_index=True, default='CALL')
@@ -84,14 +84,13 @@ class OrderedProduct(models.Model):
         verbose_name='Продукт',
         related_name='ordered_products',
     )
-    quantity = models.PositiveIntegerField(verbose_name='Количество')
+    quantity = models.PositiveIntegerField(verbose_name='Количество', validators=[MinValueValidator(1)])
     price = models.DecimalField(
         decimal_places=2,
-        max_digits=12,
-        null=True,
+        max_digits=6,
         validators=[
             MinValueValidator(1), DecimalValidator(
-                max_digits=12, decimal_places=2
+                max_digits=6, decimal_places=2
             )
         ],
     )
