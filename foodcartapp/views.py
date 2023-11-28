@@ -86,11 +86,12 @@ def product_list_api(request):
 @transaction.atomic
 def register_order(request):
     data = request.data
+    data['ordered_products'] = data.pop('products')
     serializer = OrderSerializer(data=data)
     serializer.is_valid(raise_exception=True)
     data = serializer.validated_data
+    data['phonenumber'] = str(data['phonenumber'])
     order = serializer.save()
-
     return Response(data)
 
 

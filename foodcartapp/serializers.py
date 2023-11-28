@@ -23,15 +23,16 @@ class ProductSerializer(ModelSerializer):
         fields = ['product', 'quantity']
 
 
-class OrderSerializer(Serializer):
+class OrderSerializer(ModelSerializer):
     phonenumber = PhoneNumberField(region='RU')
     firstname = CharField()
     lastname = CharField()
     address = CharField()
-    products = ListField(child=ProductSerializer(), allow_empty=False)
+    ordered_products = ListField(child=ProductSerializer(), allow_empty=False)
 
-    def validate_phonenumber(self, value):
-        return str(value)
+    class Meta:
+        model = Order
+        fields = ['phonenumber', 'firstname', 'lastname', 'address', 'ordered_products']
 
     def create(self, validated_data):
         order = Order.objects.create(
@@ -40,7 +41,7 @@ class OrderSerializer(Serializer):
             phonenumber=validated_data['phonenumber'],
             address=validated_data['address']
         )
-        for ordered_product in validated_data['products']:
+        for ordered_product in validated_data['ordered_products']:
             product = Product.objects.get(id=ordered_product['product'])
             OrderedProduct.objects.create(
                 order=order,
