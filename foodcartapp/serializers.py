@@ -1,5 +1,5 @@
 from rest_framework.serializers import Serializer, ModelSerializer
-from rest_framework.serializers import CharField, IntegerField, ListField
+from rest_framework.serializers import CharField, IntegerField, ListField, PrimaryKeyRelatedField
 from rest_framework.serializers import ValidationError
 
 from phonenumber_field.serializerfields import PhoneNumberField
@@ -8,19 +8,13 @@ from .models import Product, Order, OrderedProduct
 
 
 class ProductSerializer(ModelSerializer):
-    product = IntegerField(min_value=1)
+    product = PrimaryKeyRelatedField(queryset=Product.objects.all())
     quantity = IntegerField(min_value=1)
-
-    def validate_product(self, value):
-        products = Product.objects.all()
-        product = products.filter(id=value)
-        if not product:
-            raise ValidationError(f'Product {value} does not exist')
-        return value
 
     class Meta:
         model = OrderedProduct
         fields = ['product', 'quantity']
+        depth = 1
 
 
 class OrderSerializer(ModelSerializer):
@@ -35,6 +29,15 @@ class OrderSerializer(ModelSerializer):
         fields = ['phonenumber', 'firstname', 'lastname', 'address', 'ordered_products']
 
     def create(self, validated_data):
+        updated_ordered_products = []
+        updated_data = {
+            'phonenumber': str(validated_data['phonenumber']),
+            'firstname': validated_data['firstname'],
+            'lastname': validated_data['lastname'],
+            'address': validated_data['address'],
+            'ordered_products': updated_ordered_products
+
+        }
         order = Order.objects.create(
             firstname=validated_data['firstname'],
             lastname=validated_data['lastname'],
@@ -42,12 +45,22 @@ class OrderSerializer(ModelSerializer):
             address=validated_data['address']
         )
         for ordered_product in validated_data['ordered_products']:
-            product = Product.objects.get(id=ordered_product['product'])
+            product = ordered_product['product']
             OrderedProduct.objects.create(
                 order=order,
                 product=product,
                 quantity=ordered_product['quantity'],
                 price=ordered_product['quantity'] * product.price
             )
-        return order
 
+            updated_ordered_product = {
+                'product': {
+                    'name': product.name,
+                    'price': product.price,
+                    'id': product.id,
+                },
+                'quantity': ordered_product['quantity']
+            }
+            updated_ordered_products.append(updated_ordered_product)
+        return updated_data
+    
