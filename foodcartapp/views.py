@@ -89,9 +89,7 @@ def register_order(request):
     data['ordered_products'] = data.pop('products')
     serializer = OrderSerializer(data=data)
     serializer.is_valid(raise_exception=True)
-    data = serializer.validated_data
-    data['phonenumber'] = str(data['phonenumber'])
-    order = serializer.save()
-    return Response(data)
+    instance = serializer.save()
+    return Response(instance)
 
 
