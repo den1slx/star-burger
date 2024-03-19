@@ -17,6 +17,12 @@ DEBUG = env.bool('DEBUG', False)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 
+ROLLBAR_PROJECT_POST_SERVER_ITEM = env.str('ROLLBAR_PROJECT_POST_SERVER_ITEM')
+ROLLBAR_ENVIRONMENT = env.str('ROLLBAR_ENVIRONMENT', 'development')
+ROLLBAR_CODE_VERSION = env.str('ROLLBAR_CODE_VERSION', '1.0')
+
+USE_X_FORWARDED_HOST=True
+
 INSTALLED_APPS = [
     'foodcartapp.apps.FoodcartappConfig',
     'restaurateur.apps.RestaurateurConfig',
@@ -40,9 +46,21 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
 ROOT_URLCONF = 'star_burger.urls'
+
+ROLLBAR = {
+        'access_token': ROLLBAR_PROJECT_POST_SERVER_ITEM,
+        'environment': ROLLBAR_ENVIRONMENT,
+        'code_version': ROLLBAR_CODE_VERSION,
+        'root': BASE_DIR,
+        }
+
+REST_FRAMEWORK = {
+        'EXCEPTION_HANDLER': 'rollbar.contrib.django_rest_framework.post_exception_handler'
+        }
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',
