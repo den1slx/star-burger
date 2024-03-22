@@ -151,7 +151,15 @@ Parcel будет следить за файлами в каталоге `bundle
 - `TIMEDELTA` — Количество дней через которое будут обновляться гео данные. Дефолтное значение `1`.
 - `ROLLBAR_PROJECT_POST_SERVER_ITEM` — Токен проекта. [О токенах](https://docs.rollbar.com/docs/access-tokens)
 - `ROLLBAR_ENVIRONMENT` — Дефолтное значение `development` [Об окружении](https://docs.rollbar.com/docs/environments)
-- `ROLLBAR_CODE_VERSION` — Дефолтное значение `1.0` [О версиях](https://docs.rollbar.com/docs/versions) 
+- `ROLLBAR_CODE_VERSION` — Дефолтное значение `1.0` [О версиях](https://docs.rollbar.com/docs/versions)
+
+- `DATABASES_NAME` — Название базы данных. [О DATABASES](https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-DATABASES)
+- `DATABASES_USER` — Имя пользователя
+- `DATABASES_PASSWORD` — Пароль пользователя
+- `DATABASES_HOST` — Дефолтное значение `localhost`
+- `DATABASES_PORT` — Дефолтное значение `''`
+
+ 
 ## Цели проекта
 
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org). За основу был взят код проекта [FoodCart](https://github.com/Saibharath79/FoodCart).
