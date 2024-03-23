@@ -20,6 +20,12 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 ROLLBAR_PROJECT_POST_SERVER_ITEM = env.str('ROLLBAR_PROJECT_POST_SERVER_ITEM')
 ROLLBAR_ENVIRONMENT = env.str('ROLLBAR_ENVIRONMENT', 'development')
 ROLLBAR_CODE_VERSION = env.str('ROLLBAR_CODE_VERSION', '1.0')
+ 
+DATABASES_NAME = env.str('DATABASES_NAME')
+DATABASES_USER = env.str('DATABASES_USER', 'postgres')
+DATABASES_PASSWORD = env.str('DATABASES_PASSWORD')
+DATABASES_HOST = env.str('DATABASES_HOST', 'localhost')
+DATABASES_PORT = env.str('DATABASES_PORT', '')
 
 USE_X_FORWARDED_HOST=True
 
@@ -101,10 +107,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:////{0}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
-    )
-}
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': DATABASES_NAME,
+            'USER': DATABASES_USER,
+            'PASSWORD': DATABASES_PASSWORD,
+            'HOST': DATABASES_HOST,
+            'PORT': DATABASES_PORT,
+            }
+        }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
