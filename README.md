@@ -153,12 +153,8 @@ Parcel будет следить за файлами в каталоге `bundle
 - `ROLLBAR_ENVIRONMENT` — Дефолтное значение `development` [Об окружении](https://docs.rollbar.com/docs/environments)
 - `ROLLBAR_CODE_VERSION` — Дефолтное значение `1.0` [О версиях](https://docs.rollbar.com/docs/versions)
 
-- `DATABASES_NAME` — Название базы данных. [О DATABASES](https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-DATABASES)
-- `DATABASES_USER` — Имя пользователя
-- `DATABASES_PASSWORD` — Пароль пользователя
-- `DATABASES_HOST` — Дефолтное значение `localhost`
-- `DATABASES_PORT` — Дефолтное значение `''`
-
+- `DATABASE_URL` — [О DATABASES](https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-DATABASES) и [URL схемы](https://github.com/jazzband/dj-database-url?tab=readme-ov-file#url-schema)
+- `DATABASE_ENGINE` — Дефолтное значение `django.db.backends.postgresql_psycopg2`
  
 ## Цели проекта
 

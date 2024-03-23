@@ -21,11 +21,8 @@ ROLLBAR_PROJECT_POST_SERVER_ITEM = env.str('ROLLBAR_PROJECT_POST_SERVER_ITEM')
 ROLLBAR_ENVIRONMENT = env.str('ROLLBAR_ENVIRONMENT', 'development')
 ROLLBAR_CODE_VERSION = env.str('ROLLBAR_CODE_VERSION', '1.0')
  
-DATABASES_NAME = env.str('DATABASES_NAME')
-DATABASES_USER = env.str('DATABASES_USER', 'postgres')
-DATABASES_PASSWORD = env.str('DATABASES_PASSWORD')
-DATABASES_HOST = env.str('DATABASES_HOST', 'localhost')
-DATABASES_PORT = env.str('DATABASES_PORT', '')
+DATABASE_URL = env.str('DATABASE_URL')
+DATABASE_ENGINE = env.str('DATABASE_ENGINE', 'django.db.backends.postgresql_psycopg2')
 
 USE_X_FORWARDED_HOST=True
 
@@ -106,15 +103,11 @@ WSGI_APPLICATION = 'star_burger.wsgi.application'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+db_config = dj_database_url.config(default=DATABASE_URL)
+db_config['ENGINE'] = DATABASE_ENGINE
+
 DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': DATABASES_NAME,
-            'USER': DATABASES_USER,
-            'PASSWORD': DATABASES_PASSWORD,
-            'HOST': DATABASES_HOST,
-            'PORT': DATABASES_PORT,
-            }
+        'default': db_config
         }
 
 AUTH_PASSWORD_VALIDATORS = [
