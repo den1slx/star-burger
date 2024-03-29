@@ -149,13 +149,16 @@ Parcel будет следить за файлами в каталоге `bundle
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 - `YANDEX_TOKEN` — Получить токен можно в [кабинете разработчика](https://developer.tech.yandex.ru/services)
 - `TIMEDELTA` — Количество дней через которое будут обновляться гео данные. Дефолтное значение `1`.
+
+
 - `ROLLBAR_PROJECT_POST_SERVER_ITEM` — Токен проекта. [О токенах](https://docs.rollbar.com/docs/access-tokens)
 - `ROLLBAR_ENVIRONMENT` — Дефолтное значение `development` [Об окружении](https://docs.rollbar.com/docs/environments)
 - `ROLLBAR_CODE_VERSION` — Дефолтное значение `1.0` [О версиях](https://docs.rollbar.com/docs/versions)
 
+
 - `DATABASE_URL` — [О DATABASES](https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-DATABASES) и [URL схемы](https://github.com/jazzband/dj-database-url?tab=readme-ov-file#url-schema)
 - `DATABASE_ENGINE` — Дефолтное значение `django.db.backends.postgresql_psycopg2`
- 
+
 ## Цели проекта
 
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org). За основу был взят код проекта [FoodCart](https://github.com/Saibharath79/FoodCart).
