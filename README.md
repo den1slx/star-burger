@@ -59,7 +59,10 @@ pip install -r requirements.txt
 SECRET_KEY=django-insecure-0if40nf4nf93n4
 ```
 
-Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
+Установите postgreSQL. [как?](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-14-04)
+и [где?](https://www.postgresql.org/download/)
+
+Определите переменную окружения `DATABASE_URL` ([О DATABASES](https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-DATABASES) и [URL схемы](https://github.com/jazzband/dj-database-url?tab=readme-ov-file#url-schema)) и выполните миграцию
 
 ```sh
 python manage.py migrate
