@@ -154,7 +154,7 @@ Parcel будет следить за файлами в каталоге `bundle
 - `TIMEDELTA` — Количество дней через которое будут обновляться гео данные. Дефолтное значение `1`.
 
 
-- `ROLLBAR_PROJECT_POST_SERVER_ITEM` — Токен проекта. [О токенах](https://docs.rollbar.com/docs/access-tokens)
+- `ROLLBAR_PROJECT_POST_SERVER_ITEM` — Токен проекта. [О токенах](https://docs.rollbar.com/docs/access-tokens). Дефолтное значение `''`
 - `ROLLBAR_ENVIRONMENT` — Дефолтное значение `development` [Об окружении](https://docs.rollbar.com/docs/environments)
 - `ROLLBAR_CODE_VERSION` — Дефолтное значение `1.0` [О версиях](https://docs.rollbar.com/docs/versions)
 
